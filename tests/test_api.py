@@ -198,6 +198,32 @@ class TestApi(unittest.TestCase):
         self.assertNotIn("Traceback", json.dumps(b))
         self.assertNotIn("File \"", json.dumps(b))
 
+    def test_hapus_watchlist_tidak_menghapus_riwayat(self):
+        """DELETE /api/watchlist/{code}: emiten lepas, analisis lamanya utuh."""
+        k = self.klien("andi", "andi123")
+        k.call("POST", "/api/watchlist", {"code": "ASII"})
+        _, a = k.call("POST", "/api/analyze/ASII", {})
+        self.assertEqual(a["status"], "ok")
+
+        s, _ = k.call("DELETE", "/api/watchlist/ASII")
+        self.assertEqual(s, 204)
+
+        _, wl = k.call("GET", "/api/watchlist")
+        self.assertNotIn("ASII", [i["code"] for i in wl["items"]])
+
+        # riwayat analisis tetap bisa dibuka
+        s, lama = k.call("GET", f"/api/analyses/id/{a['id']}")
+        self.assertEqual(s, 200)
+        self.assertEqual(lama["data_snapshot"]["scores"], a["scores"])
+
+    def test_hapus_watchlist_butuh_peran_analyst(self):
+        s, _ = self.klien("tamu", "tamu123").call("DELETE", "/api/watchlist/BBCA")
+        self.assertEqual(s, 403)
+
+    def test_hapus_watchlist_rute_salah_404(self):
+        s, _ = self.klien("andi", "andi123").call("DELETE", "/api/watchlist/TERLALUPANJANG")
+        self.assertEqual(s, 404)
+
     def test_ekspor_csv_memuat_disclaimer(self):
         import urllib.request
         k = self.klien("andi", "andi123")
