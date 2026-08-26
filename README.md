@@ -20,8 +20,10 @@ Alur diorkestrasi LangGraph: `validate → compute → narrate → critique → 
 
 ## Menjalankan
 
+Butuh **Python 3.11–3.13**. Pada Python 3.14 sebagian dependency CrewAI (`tiktoken`) belum menyediakan wheel dan gagal dibangun tanpa Rust; sistem tetap berjalan penuh di 3.14 lewat jalur fallback, hanya tanpa narasi LLM.
+
 ```bash
-pip install -r requirements.txt   # opsional, lihat catatan di bawah
+pip install -r requirements.txt   # opsional, lihat Dependency di bawah
 python -m agent.seed              # isi data contoh
 python run_dev_server.py          # http://127.0.0.1:8000
 ```
