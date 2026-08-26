@@ -8,6 +8,11 @@ def chk(name, cond, detail=""):
 
 docs = ["BRD.md","FRD.md","TRD.md","PRD.md","AGENTS.md","USERFLOW.md","DATAMODEL.md","API_CONTRACT.md"]
 for d in docs: chk(f"dokumen {d} ada", (root/d).exists())
+chk("README.md ada", (root/'README.md').exists())
+_rd=(root/'README.md').read_text() if (root/'README.md').exists() else ""
+chk("README memuat disclaimer", 'bukan nasihat investasi' in _rd)
+for _l in re.findall(r"\]\(([\w./-]+\.md)\)", _rd):
+    chk(f"tautan README -> {_l}", (root/_l).exists())
 
 # 1. tidak ada sisa istilah POS di dokumen & agent
 pos_terms = re.compile(r"\bayam goreng\b|\bkasir\b|\bstruk\b|\bomzet\b|\bshift\b|sale_items|stock_movements|node:sqlite|\bexpress\b|npm test|\bPOS\b", re.I)
