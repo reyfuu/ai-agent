@@ -198,6 +198,29 @@ class TestApi(unittest.TestCase):
         self.assertNotIn("Traceback", json.dumps(b))
         self.assertNotIn("File \"", json.dumps(b))
 
+    def test_berkas_statis_dilayani(self):
+        for path, mime in (("/", "text/html"), ("/style.css", "text/css"),
+                           ("/app.js", "application/javascript")):
+            with self.subTest(path=path):
+                req = urllib.request.Request(self.base + path)
+                with urllib.request.urlopen(req, timeout=10) as res:
+                    self.assertEqual(res.status, 200)
+                    self.assertIn(mime, res.headers["Content-Type"])
+
+    def test_path_traversal_ditolak(self):
+        """../ tidak boleh keluar dari direktori web/."""
+        for jahat in ("/../server.py", "/../../etc/passwd",
+                      "/..%2f..%2fserver.py", "/../agent/db.py"):
+            with self.subTest(path=jahat):
+                s, b = Klien(self.base).call("GET", jahat)
+                self.assertEqual(s, 404, f"{jahat} tidak boleh dilayani")
+                if b:
+                    self.assertNotIn("SESSION_SECRET", json.dumps(b))
+
+    def test_berkas_tidak_ada_404(self):
+        s, _ = Klien(self.base).call("GET", "/tidak-ada.html")
+        self.assertEqual(s, 404)
+
     def test_hapus_watchlist_tidak_menghapus_riwayat(self):
         """DELETE /api/watchlist/{code}: emiten lepas, analisis lamanya utuh."""
         k = self.klien("andi", "andi123")

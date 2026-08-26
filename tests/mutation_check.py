@@ -27,6 +27,9 @@ MUTASI = [
  ("agent/graph.py","ok, problems = validate_narrative(text, state[\"snapshot\"])","ok, problems = True, []","validasi narasi di graf dilewati"),
  ("server.py","if RANK.get(user[\"role\"], -1) < RANK[minimum]:","if False:","pemeriksaan peran dimatikan"),
  ("server.py","if not hmac.compare_digest(mac, expected):","if False:","verifikasi tanda tangan sesi dimatikan"),
+ ("server.py",'if not str(f).startswith(str(WEB_DIR.resolve())) or not f.is_file():','if not f.is_file():',"penjagaan path traversal dilucuti"),
+ ("server.py","if time.time() - int(issued) > SESSION_TTL:","if False:","masa berlaku sesi diabaikan"),
+ ("agent/llm.py","return (text or None), metrics","return (text or 'kosong'), metrics","balasan kosong dianggap narasi sah"),
 ]
 py = ".venv/bin/python" if pathlib.Path(".venv/bin/python").exists() else sys.executable
 tertangkap = lolos = 0

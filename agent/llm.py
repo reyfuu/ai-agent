@@ -140,13 +140,19 @@ def _get_llm():
     )
 
 
-def narrate_with_crew(snapshot: dict[str, Any]) -> tuple[str | None, dict[str, int]]:
+def narrate_with_crew(
+    snapshot: dict[str, Any], llm: Any = None
+) -> tuple[str | None, dict[str, int]]:
     """Narasi dua agent CrewAI: Narrator menulis, Critic memeriksa angka.
+
+    `llm` boleh diisi untuk pengujian; tanpa itu klien dibangun dari
+    environment. Injeksi ini yang membuat jalur CrewAI bisa diuji tanpa
+    kunci API dan tanpa menyentuh jaringan.
 
     Mengembalikan (narasi | None, metrik). None berarti pemanggil harus
     memakai template_narrative().
     """
-    llm = _get_llm()
+    llm = llm if llm is not None else _get_llm()
     if llm is None:
         return None, {"tokens_in": 0, "tokens_out": 0}
     try:

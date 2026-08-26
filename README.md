@@ -60,16 +60,16 @@ Selebihnya stdlib Python: `sqlite3`, `http.server`, `hashlib`, `hmac`, `statisti
 ## Verifikasi
 
 ```bash
-python -m unittest discover -s tests -t .   # 112 test
-python tests/verify_docs.py                 # 184 pemeriksaan dokumen
-python tests/mutation_check.py              # 14 mutasi invariant
+python -m unittest discover -s tests -t .   # 124 test
+python tests/verify_docs.py                 # 196 pemeriksaan dokumen
+python tests/mutation_check.py              # 17 mutasi invariant
 ```
 
 | Lapis | Yang dibuktikan |
 |---|---|
-| 112 unittest | indikator vs implementasi referensi independen, reproduksi analisis lama, anti-halusinasi, otorisasi lewat HTTP nyata |
-| 184 pemeriksaan dokumen | konsistensi 8 dokumen, skema SQL dieksekusi sungguhan, endpoint kontrak vs implementasi |
-| 14 mutasi | test benar-benar **gagal** saat invariant dirusak; test yang tidak pernah gagal tidak membuktikan apa pun |
+| 124 unittest | indikator vs implementasi referensi independen, reproduksi analisis lama, anti-halusinasi, otorisasi lewat HTTP nyata, jalur CrewAI dengan LLM tiruan, path traversal |
+| 196 pemeriksaan dokumen | konsistensi 8 dokumen, skema SQL dieksekusi sungguhan, endpoint kontrak vs implementasi |
+| 17 mutasi | test benar-benar **gagal** saat invariant dirusak; test yang tidak pernah gagal tidak membuktikan apa pun |
 
 Seluruh test dijalankan di dua lingkungan: dengan framework terpasang dan tanpa satu pun framework.
 

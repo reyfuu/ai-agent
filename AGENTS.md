@@ -76,7 +76,7 @@ Otorisasi diperiksa **di server pada setiap endpoint**. Menyembunyikan tombol di
 Setiap perubahan pada logika non-trivial meninggalkan satu pemeriksaan yang bisa dijalankan.
 Jalankan `python -m unittest discover -s tests -t .` sebelum menyatakan selesai.
 Untuk perubahan pada invariant, jalankan juga `python tests/mutation_check.py`: harness itu
-merusak 14 invariant paling mahal satu per satu dan memastikan test menangkap semuanya.
+merusak 17 invariant paling mahal satu per satu dan memastikan test menangkap semuanya.
 Test yang tidak pernah gagal tidak membuktikan apa pun.
 Invariant di `tests/` (akurasi indikator, reproducibility analisis lama, penolakan data tidak lengkap,
 batas arsitektur ADR-001, dan otorisasi API) harus lulus — kalau merah, itu bug produk, bukan test yang perlu dilonggarkan.
