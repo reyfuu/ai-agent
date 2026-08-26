@@ -78,6 +78,7 @@ agent/data.py       ambil & cache harga, adapter sumber data
 agent/analysis.py   indikator teknikal & fundamental, skoring
 agent/llm.py        klien LLM tipis, prompt, narasi
 agent/db.py         skema SQLite, migrasi, query helper
+agent/batch.py      runner analisis watchlist + kuota (CLI)
 server.py           routing, auth, endpoint API, render HTML
 web/index.html      UI utama
 web/app.js, web/style.css

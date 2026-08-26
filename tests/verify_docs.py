@@ -83,5 +83,47 @@ gi = (root/'.gitignore').read_text()
 for pat in ["stocks.db",".env","__pycache__"]:
     chk(f".gitignore memuat {pat}", pat in gi)
 
+
+# 10. konsistensi silang PRD <-> FRD <-> TRD <-> AGENTS
+prd=(root/'PRD.md').read_text(); frd=(root/'FRD.md').read_text()
+trd=(root/'TRD.md').read_text(); ag=(root/'AGENTS.md').read_text()
+
+def _matrix(txt, head):
+    blok = txt[txt.index(head):][:2500]; out={}
+    for ln in blok.splitlines():
+        if ln.startswith('|') and ('\u2705' in ln or '\u274c' in ln):
+            c=[x.strip() for x in ln.strip('|').split('|')]
+            out[c[0].lower().replace('*','')]=tuple(c[1:4])
+    return out
+mp=_matrix(prd,'### 2.2'); mf=_matrix(frd,'## 2. Aktor')
+chk("matriks hak akses PRD >=8 baris", len(mp)>=8, len(mp))
+sama=[k for k in mp if k in mf]
+chk("matriks PRD & FRD beririsan >=5 baris", len(sama)>=5, sama)
+for k in sama:
+    chk(f"hak akses konsisten PRD/FRD: '{k}'", mp[k]==mf[k], f"PRD{mp[k]} vs FRD{mf[k]}")
+
+st=set(re.findall(r"`(ok|insufficient_data|stale|error)`", prd))
+chk("PRD mendefinisikan 4 status analisis", st=={'ok','insufficient_data','stale','error'}, st)
+for s in ['insufficient_data','stale']:
+    chk(f"status '{s}' dipakai juga di FRD", s in frd)
+    chk(f"status '{s}' dipakai juga di TRD/AGENTS", s in trd or s in ag)
+
+chk("PRD punya 9 fitur P-x", len(re.findall(r"\| (P-\d) \|", prd))==9)
+for _p,_f in {'P-1':'F-1.1','P-2':'F-1.2','P-3':'F-2.1','P-4':'F-2.6','P-5':'F-3.2',
+              'P-6':'F-4.2','P-7':'F-5.3','P-8':'F-5.4','P-9':'F-6.1'}.items():
+    chk(f"fitur {_p} tertutup kebutuhan FRD {_f}", _f in frd)
+
+blok=re.search(r"## Struktur file\n\n```\n(.*?)```", ag, re.S).group(1)
+mod=set(re.findall(r"`(agent/\w+\.py|server\.py)`", trd))
+chk("semua modul TRD tercantum di struktur file AGENTS", not (mod-set(re.findall(r"^([\w./]+\.py)", blok, re.M))), mod-set(re.findall(r"^([\w./]+\.py)", blok, re.M)))
+
+chk("TRD memakai ketiga peran", set(re.findall(r"\b(guest|analyst|admin)\b", trd))=={'guest','analyst','admin'})
+for _l,_pat in [("60 hari bursa",r"60 hari"),("100 emiten",r"100 emiten"),("bobot total 100",r"total (?:tepat|wajib)? ?100")]:
+    _ada=[d for d,tx in [('PRD',prd),('FRD',frd),('TRD',trd),('AGENTS',ag)] if re.search(_pat,tx)]
+    chk(f"angka '{_l}' konsisten di >=2 dokumen", len(_ada)>=2, _ada)
+_bad=[l for tx in (prd,frd,trd,ag) for l in tx.splitlines()
+      if re.search(r"^\s*[-*]?\s*(rekomendasi )?(beli|jual) (sekarang|saham)", l, re.I)]
+chk("tidak ada instruksi beli/jual direktif", not _bad, _bad[:2])
+
 print(f"\n{checks - len(fails)}/{checks} lulus")
 sys.exit(1 if fails else 0)
