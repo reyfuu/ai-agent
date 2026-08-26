@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Analisis Saham</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<a class="lewati" href="#utama">Lewati ke konten utama</a>
+
+<header>
+  <h1>Agent Analisis Saham</h1>
+  <p id="siapa" role="status">Memuat…</p>
+</header>
+
+<main id="utama">
+
+  <section id="panel-login" aria-labelledby="j-login">
+    <h2 id="j-login">Masuk</h2>
+    <form id="form-login">
+      <label for="username">Nama pengguna</label>
+      <input id="username" name="username" autocomplete="username" required>
+      <label for="password">Kata sandi</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" required>
+      <button type="submit">Masuk</button>
+      <p id="galat-login" class="galat" role="alert"></p>
+    </form>
+  </section>
+
+  <section id="panel-app" hidden>
+    <section aria-labelledby="j-cari">
+      <h2 id="j-cari">Cari emiten</h2>
+      <form id="form-cari">
+        <label for="q">Kode atau nama emiten</label>
+        <input id="q" name="q" placeholder="BBCA" autocomplete="off">
+        <button type="submit">Cari</button>
+      </form>
+      <ul id="hasil-cari" class="daftar"></ul>
+    </section>
+
+    <section aria-labelledby="j-watchlist">
+      <h2 id="j-watchlist">Watchlist</h2>
+      <table id="tabel-watchlist">
+        <caption>Emiten yang Anda pantau</caption>
+        <thead>
+          <tr>
+            <th scope="col">Kode</th><th scope="col">Nama</th><th scope="col">Aksi</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <p id="watchlist-kosong" class="petunjuk">Belum ada emiten. Tambahkan lewat pencarian di atas.</p>
+    </section>
+
+    <section id="panel-hasil" aria-labelledby="j-hasil" hidden>
+      <h2 id="j-hasil">Hasil analisis</h2>
+      <div id="status-analisis" role="status"></div>
+
+      <dl id="ringkas-skor"></dl>
+
+      <h3>Grafik harga</h3>
+      <canvas id="grafik" width="720" height="220"
+              role="img" aria-label="Grafik harga penutupan"></canvas>
+      <details>
+        <summary>Tabel angka grafik (padanan untuk pembaca layar)</summary>
+        <table id="tabel-grafik">
+          <caption>Harga penutupan per tanggal bursa</caption>
+          <thead><tr><th scope="col">Tanggal</th><th scope="col">Penutupan (Rp)</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </details>
+
+      <h3>Indikator</h3>
+      <table id="tabel-indikator">
+        <caption>Nilai indikator teknikal pada tanggal analisis</caption>
+        <thead><tr><th scope="col">Indikator</th><th scope="col">Nilai</th></tr></thead>
+        <tbody></tbody>
+      </table>
+
+      <h3>Narasi</h3>
+      <p id="narasi"></p>
+
+      <h3>Jejak orkestrasi</h3>
+      <table id="tabel-runs">
+        <caption>Langkah agent yang dijalankan untuk analisis ini</caption>
+        <thead>
+          <tr>
+            <th scope="col">Framework</th><th scope="col">Node</th>
+            <th scope="col">Status</th><th scope="col">Durasi</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <p id="disclaimer" class="disclaimer"></p>
+      <button id="btn-cetak" type="button">Cetak PDF</button>
+    </section>
+  </section>
+</main>
+
+<footer>
+  <p class="disclaimer">Analisis otomatis untuk keperluan informasi, bukan nasihat investasi.</p>
+</footer>
+
+<script src="/app.js"></script>
+</body>
+</html>

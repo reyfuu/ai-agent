@@ -1,0 +1,171 @@
+/* Vanilla, tanpa framework dan tanpa build step. */
+
+:root {
+  --tinta: #16202c;
+  --redup: #5a6b7d;
+  --garis: #d4dde6;
+  --latar: #f7f9fb;
+  --kartu: #ffffff;
+  --aksen: #1c4f82;
+  --naik: #0f6b3f;
+  --turun: #a3231f;
+  --peringatan: #7a5200;
+  --latar-peringatan: #fdf3d6;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: var(--tinta);
+  background: var(--latar);
+}
+
+.lewati {
+  position: absolute;
+  left: -9999px;
+}
+.lewati:focus {
+  left: 1rem;
+  top: 1rem;
+  z-index: 10;
+  background: var(--kartu);
+  padding: .6rem 1rem;
+  border: 2px solid var(--aksen);
+  border-radius: 6px;
+}
+
+header, main, footer { max-width: 60rem; margin: 0 auto; padding: 1rem; }
+
+header {
+  border-bottom: 1px solid var(--garis);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+h1 { font-size: 1.4rem; margin: .4rem 0; }
+h2 { font-size: 1.15rem; margin: 1.6rem 0 .6rem; }
+h3 { font-size: 1rem; margin: 1.2rem 0 .4rem; }
+
+section > form, #panel-hasil {
+  background: var(--kartu);
+  border: 1px solid var(--garis);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+label { display: block; font-weight: 600; margin-top: .7rem; font-size: .9rem; }
+
+input {
+  width: 100%;
+  max-width: 22rem;
+  padding: .55rem .7rem;
+  border: 1px solid var(--garis);
+  border-radius: 6px;
+  font: inherit;
+}
+
+button {
+  margin-top: .9rem;
+  padding: .55rem 1.1rem;
+  font: inherit;
+  font-weight: 600;
+  color: #fff;
+  background: var(--aksen);
+  border: 1px solid var(--aksen);
+  border-radius: 6px;
+  cursor: pointer;
+}
+button.sekunder { color: var(--aksen); background: var(--kartu); }
+button:disabled { opacity: .55; cursor: not-allowed; }
+
+/* Fokus selalu terlihat: navigasi keyboard adalah kebutuhan, bukan tambahan. */
+a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visible {
+  outline: 3px solid var(--aksen);
+  outline-offset: 2px;
+}
+
+table { width: 100%; border-collapse: collapse; margin-top: .5rem; background: var(--kartu); }
+caption { text-align: left; font-size: .85rem; color: var(--redup); padding-bottom: .4rem; }
+th, td { text-align: left; padding: .5rem .6rem; border-bottom: 1px solid var(--garis); }
+th { font-size: .82rem; text-transform: uppercase; letter-spacing: .03em; color: var(--redup); }
+td.angka, th.angka { text-align: right; font-variant-numeric: tabular-nums; }
+
+.daftar { list-style: none; padding: 0; }
+.daftar li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  padding: .5rem .6rem;
+  background: var(--kartu);
+  border: 1px solid var(--garis);
+  border-radius: 6px;
+  margin-top: .4rem;
+}
+
+dl#ringkas-skor {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: .8rem;
+  margin: 0;
+}
+dl#ringkas-skor > div {
+  border: 1px solid var(--garis);
+  border-radius: 6px;
+  padding: .6rem;
+}
+dl#ringkas-skor dt { font-size: .8rem; color: var(--redup); }
+dl#ringkas-skor dd { margin: .2rem 0 0; font-size: 1.3rem; font-weight: 700; }
+
+/* Warna bukan satu-satunya pembawa makna: selalu disertai tanda dan teks. */
+.naik { color: var(--naik); }
+.turun { color: var(--turun); }
+
+.badge {
+  display: inline-block;
+  padding: .15rem .5rem;
+  border-radius: 999px;
+  font-size: .78rem;
+  font-weight: 700;
+  border: 1px solid currentColor;
+}
+.badge-stale { color: var(--peringatan); background: var(--latar-peringatan); }
+.badge-kurang { color: var(--redup); background: var(--latar); }
+
+.galat { color: var(--turun); font-weight: 600; min-height: 1.4rem; }
+.petunjuk { color: var(--redup); font-size: .9rem; }
+
+.disclaimer {
+  margin-top: 1rem;
+  padding: .7rem .9rem;
+  background: var(--latar-peringatan);
+  border-left: 4px solid var(--peringatan);
+  border-radius: 4px;
+  font-size: .88rem;
+}
+
+canvas {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--garis);
+  border-radius: 6px;
+  background: var(--kartu);
+}
+
+footer { border-top: 1px solid var(--garis); color: var(--redup); font-size: .85rem; }
+
+@media print {
+  @page { margin: 12mm; }
+  header, footer, form, button, #panel-login, #tabel-runs, .lewati { display: none !important; }
+  body { background: #fff; font-size: 11pt; }
+  #panel-hasil { border: none; padding: 0; }
+  table, canvas, dl { break-inside: avoid; }
+  .disclaimer { border: 1px solid #000; background: #fff; }
+  details { display: block; }
+  details > summary { display: none; }
+}

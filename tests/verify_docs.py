@@ -6,7 +6,7 @@ def chk(name, cond, detail=""):
     print(f"{'PASS' if cond else 'FAIL'}  {name}" + (f"  -> {detail}" if not cond and detail else ""))
     if not cond: fails.append(name)
 
-docs = ["BRD.md","FRD.md","TRD.md","PRD.md","AGENTS.md"]
+docs = ["BRD.md","FRD.md","TRD.md","PRD.md","AGENTS.md","USERFLOW.md","DATAMODEL.md","API_CONTRACT.md"]
 for d in docs: chk(f"dokumen {d} ada", (root/d).exists())
 
 # 1. tidak ada sisa istilah POS di dokumen & agent
@@ -124,6 +124,62 @@ for _l,_pat in [("60 hari bursa",r"60 hari"),("100 emiten",r"100 emiten"),("bobo
 _bad=[l for tx in (prd,frd,trd,ag) for l in tx.splitlines()
       if re.search(r"^\s*[-*]?\s*(rekomendasi )?(beli|jual) (sekarang|saham)", l, re.I)]
 chk("tidak ada instruksi beli/jual direktif", not _bad, _bad[:2])
+
+
+# 11. dokumen baru: USERFLOW / DATAMODEL / API_CONTRACT
+uf=(root/'USERFLOW.md').read_text(); dm=(root/'DATAMODEL.md').read_text(); ac=(root/'API_CONTRACT.md').read_text()
+for _d,_secs in {'USERFLOW.md':['Peta Navigasi','Alur Utama','Alur per Peran','Status yang Dilihat Pengguna'],
+                 'DATAMODEL.md':['ERD','Tabel','Invariant Data','Indeks','Migrasi'],
+                 'API_CONTRACT.md':['Konvensi','Bentuk Error Seragam','Endpoint','Matriks Otorisasi','Rate Limit']}.items():
+    _t=(root/_d).read_text()
+    for _s in _secs: chk(f"{_d} memuat bagian '{_s}'", _s in _t)
+
+# matriks otorisasi API_CONTRACT harus sepadan dengan PRD
+_mac=_matrix(ac,'## 4. Matriks Otorisasi')
+chk("API_CONTRACT punya matriks otorisasi >=7 baris", len(_mac)>=7, len(_mac))
+
+# setiap endpoint di API_CONTRACT ada di server.py
+srv=(root/'server.py').read_text()
+_eps=set(re.findall(r"`(?:GET|POST|PUT|DELETE|\*) (/api/[\w/{}.*-]+)`", ac))
+_missing=[e for e in _eps if e.split('?')[0].split('{')[0].rstrip('/*').split('/')[2] not in srv]
+chk("endpoint kontrak terimplementasi di server.py", not _missing, _missing)
+
+# tabel DATAMODEL harus ada di skema db.py
+dbsrc=(root/'agent'/'db.py').read_text()
+for _tbl in ['tickers','prices','fundamentals','analyses','agent_runs','users','watchlist','audit_logs','settings']:
+    chk(f"tabel {_tbl} ada di agent/db.py", f"CREATE TABLE {_tbl}" in dbsrc)
+
+# ADR & batas arsitektur
+adr=root/'docs'/'adr'/'001-orkestrasi-multi-agent.md'
+chk("ADR-001 ada", adr.exists())
+if adr.exists():
+    _a=adr.read_text()
+    for _s in ['Konteks','Keputusan','Konsekuensi','Alternatif yang ditolak','Kepatuhan']:
+        chk(f"ADR-001 memuat '{_s}'", _s in _a)
+    for _fw in ['LangChain','LangGraph','CrewAI']:
+        chk(f"ADR-001 membahas {_fw}", _fw in _a)
+
+# inti perhitungan bebas framework (dicek ulang di sini, bukan hanya di unittest)
+ana=(root/'agent'/'analysis.py').read_text()
+for _fw in ['langchain','langgraph','crewai']:
+    chk(f"agent/analysis.py bebas {_fw}", f"import {_fw}" not in ana and f"from {_fw}" not in ana)
+chk("run_analysis_fallback ada", 'def run_analysis_fallback' in (root/'agent'/'graph.py').read_text())
+
+# requirements dipin dan dijustifikasi
+req=(root/'requirements.txt').read_text()
+chk("requirements.txt menunjuk ADR", 'adr' in req.lower())
+chk("semua dependency dipin ke versi tepat", all('==' in l for l in req.splitlines() if l.strip() and not l.startswith('#')))
+
+# UI: aksesibilitas & keamanan dasar
+html=(root/'web'/'index.html').read_text(); js=(root/'web'/'app.js').read_text()
+chk("HTML lang=id", 'lang="id"' in html)
+chk("HTML punya main", '<main' in html)
+chk("disclaimer di UI", 'bukan nasihat investasi' in html)
+chk("tanpa CDN pihak ketiga", not re.search(r'src="https?://', html))
+_kode=re.sub(r'/\*.*?\*/','',js,flags=re.S)
+chk("app.js tidak memakai innerHTML", 'innerHTML' not in _kode)
+chk("app.js tidak menghitung indikator", not re.search(r'\b(rsi|macd|bollinger)\s*\(', _kode, re.I))
+chk("CSS punya @media print", '@media print' in (root/'web'/'style.css').read_text())
 
 print(f"\n{checks - len(fails)}/{checks} lulus")
 sys.exit(1 if fails else 0)

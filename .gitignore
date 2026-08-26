@@ -5,3 +5,5 @@ stocks.db-*
 .env
 .venv/
 node_modules/
+.venv/
+*.egg-info/

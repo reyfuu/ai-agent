@@ -1,0 +1,7 @@
+# Orkestrasi multi-agent. Justifikasi: docs/adr/001-orkestrasi-multi-agent.md
+# Batas: inti perhitungan (agent/analysis.py) TIDAK boleh mengimpor paket ini.
+# Sistem wajib tetap berjalan tanpa mereka lewat run_analysis_fallback().
+langgraph==1.2.11
+langchain==1.3.17
+langchain-openai==1.6.0
+crewai==1.15.17
